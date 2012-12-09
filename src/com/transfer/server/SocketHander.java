@@ -1,4 +1,4 @@
-package com.transfer.server.listener;
+package com.transfer.server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import com.util.Config;
 
 
 public class SocketHander {
@@ -67,11 +69,12 @@ public class SocketHander {
 				
 		System.out.println("filename : " + filename);
 				
-		File folder = new File("/home/roy_luo/Roy/photo/Roy_Luo");
+		String savePath = Config.getSavePath() + "/roy/";
+		File folder = new File(savePath);
 		if(!folder.exists())
 			folder.mkdirs();
 				
-		File file = new File("/home/roy_luo/Roy/photo/Roy_Luo/" + filename);
+		File file = new File(savePath + filename);
 		if(!file.exists()){
 			if(!file.createNewFile())
 				return;
@@ -127,13 +130,5 @@ public class SocketHander {
 				file.delete();
 		}
 	}
-	
-	/*
-	 * get deskTop path 
-	 * @return
-	 */
-	private static String getDeskTopPath(){
-		javax.swing.filechooser.FileSystemView fsv = javax.swing.filechooser.FileSystemView.getFileSystemView();
-		return fsv.getHomeDirectory().getAbsolutePath(); 
-	}
+
 }

@@ -1,6 +1,6 @@
-package com.transfer.server.main;
+package com.app;
 
-import com.transfer.server.listener.Listener;
+import com.transfer.server.Server;
 
 
 public class App {
@@ -9,6 +9,6 @@ public class App {
 	 * @param args
 	 */
 	public static void main(String[] args){
-		Listener.start();
+		Server.start();
 	}	
 }

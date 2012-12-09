@@ -1,11 +1,11 @@
-package com.transfer.server.listener;
+package com.transfer.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.transfer.server.constant.Config;
+import com.util.Config;
 
-public class Listener {
+public class Server {
 	/**
 	 * start listener
 	 */
