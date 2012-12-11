@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URLEncoder;
 
 import com.util.Config;
 
@@ -29,6 +30,7 @@ public class SocketHander {
 							
 						readStream(in);
 						
+						System.out.println("===========Close Socket");
 						socket.close();
 					
 					}catch(Exception ex){
@@ -44,7 +46,8 @@ public class SocketHander {
 			
 			(new Thread(runnable)).start();
 		}catch(Exception ex){
-			System.out.println("server: " + ex.fillInStackTrace());
+			ex.fillInStackTrace();
+
 			System.out.println("server: " + ex.getMessage());
 		}
 	}
@@ -55,79 +58,81 @@ public class SocketHander {
 	 * @param fileOut
 	 * @throws IOException
 	 */
-	private static void readStream(DataInputStream in) throws IOException{
-		boolean isSuccess = false;
-		
-		//read file information
-		String fileInfo = in.readUTF();
-		String[] fileInfoArr = fileInfo.split(",");
-		if(fileInfoArr.length < 3)
-			return;
-				
-		String filename = fileInfoArr[1];
-		double filesize = Float.parseFloat(fileInfoArr[2]);
-				
-		System.out.println("filename : " + filename);
-				
-		String savePath = Config.getSavePath() + "/roy/";
-		File folder = new File(savePath);
-		if(!folder.exists())
-			folder.mkdirs();
-				
-		File file = new File(savePath + filename);
-		if(!file.exists()){
-			if(!file.createNewFile())
-				return;
-		}
-		
-		OutputStream fileOut = null;
-		
+	private static void readStream(DataInputStream in){
 		try{
-			fileOut = new FileOutputStream(file);
+			boolean isSuccess = false;
 			
-			//read file
-			int readCompletedCount;
-			int MaxOpacity = 1024; //default: 1k; >10M : 1M; > 100M : 10M
-			if(filesize > 1024*1024*100)
-	        	MaxOpacity *= 1024*10;
-	        else if(filesize > 1024*1024*10)
-	        	MaxOpacity *= 1024;
-			
-			byte[] bytes = new byte[MaxOpacity];
-			int readCount = 0;
-			double totalBytes = 0.0;
+			//read file information
+			System.out.println("================ Start");
+
+			String fileInfo = in.readUTF();
+			System.out.println("fileInfo : " + fileInfo);
+			String[] fileInfoArr = fileInfo.split(",");
+			if(fileInfoArr.length < 3){
+				System.out.println("==================================fileInfo : " + fileInfo);
+				return;
+			}
+					
+			String filename = fileInfoArr[1];
+			long filesize = Long.parseLong(fileInfoArr[2]);
 	
-			while ((readCompletedCount = in.read(bytes, readCount, MaxOpacity - readCount)) != -1) {
-				readCount += readCompletedCount;
-				totalBytes+=readCompletedCount;
-				if(readCount == MaxOpacity){
-					fileOut.write(bytes);
+			String savePath = Config.getSavePath() + "/roy/";
+			File folder = new File(savePath);
+			if(!folder.exists())
+				folder.mkdirs();
+					
+			File file = new File(savePath + filename);
+			if(!file.exists()){
+				if(!file.createNewFile())
+					return;
+			}
+			
+			OutputStream fileOut = null;
+			
+			try{
+				fileOut = new FileOutputStream(file);
+				
+				//read file
+				int readCompletedCount;
+				int MaxOpacity = 1024; //default: 1k; >10M : 1M; > 100M : 10M
+				if(filesize > 1024*1024*100)
+		        	MaxOpacity *= 1024*10;
+		        else if(filesize > 1024*1024*10)
+		        	MaxOpacity *= 1024;
+				
+				byte[] bytes = new byte[MaxOpacity];
+				int totalBytes = 0;
+				int readLen = bytes.length;
+				if(filesize - totalBytes < readLen)
+					readLen = (int)(filesize - totalBytes);
+				while ((readCompletedCount = in.read(bytes, 0, readLen)) > 0) 
+				{
+					totalBytes += readCompletedCount;
+					fileOut.write(bytes,0,readCompletedCount);
 					fileOut.flush();
 					
-					System.out.println(bytes);
+					if(filesize - totalBytes < readLen)
+						readLen = (int)(filesize - totalBytes);
 					
-					readCount = 0;
+					if(totalBytes == filesize)
+						break;
 				}
+			
+				fileOut.close();
+				isSuccess = true;
 				
-				if(readCount < MaxOpacity && totalBytes == filesize){
-					System.out.println(bytes);
-				}
+				readStream(in);
+			}catch(Exception e){
+				System.out.println("Error1: " + e.getMessage());
 				
-				if(totalBytes >= filesize)
-					break;
+				fileOut.close();
+				
+				if(!isSuccess)
+					file.delete();
 			}
-		
-			fileOut.close();
-
-			isSuccess = true;
-			
-			readStream(in);
-			
-		}catch(Exception e){
-			fileOut.close();
-			
-			if(!isSuccess)
-				file.delete();
+		}catch(Exception ex){
+			ex.fillInStackTrace();
+			System.out.println("Error2: " + ex.getMessage());
 		}
 	}
 
