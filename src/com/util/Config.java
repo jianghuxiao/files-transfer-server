@@ -4,6 +4,10 @@ public class Config {
 	
 	public static final int SERVER_PORT = 23056; //server port
 	
+	/**
+	 * get save path
+	 * @return
+	 */
 	public static String getSavePath(){
 		return getDeskTopPath();
 	}
