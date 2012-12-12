@@ -6,7 +6,7 @@ public class Command {
 	public final static int CONNECTING = 0;
 	public final static int SUCCESS = 1;
 	public final static int FAIL = 2;
-	public final static int CLOSE_CONNECT = -1;
+	public final static int CLOSE_CONNECT = 3;
 	
 	public final static int OPEN_BROWER = 1001;
 	public final static int CLOSE_BROWER = 1002;
