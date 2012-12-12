@@ -2,7 +2,10 @@ package com.util;
 
 public class Config {
 	
-	public static final int SERVER_PORT = 23056; //server port
+	public static final int RECEIVER_PORT = 23056; //server port
+	public static final int COMMAND_PORT = 23057; //server port
+	
+	public static final String DELIMITER = ",";
 	
 	/**
 	 * get save path
