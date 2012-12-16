@@ -13,4 +13,6 @@ public class Command {
 	
 	public final static int CLOSE_MACHINE = 1003;
 	public final static int RESTART_MACHINE = 1004;
+	
+	public final static int OTHER = 1100;
 }

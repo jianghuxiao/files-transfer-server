@@ -51,6 +51,8 @@ public class CommandSocket {
 		while(true){
 			String info = in.readUTF();
 			CommandInfo commandInfo = parseCommand(info);
+			if(commandInfo == null)
+				return;
 			
 			System.out.println("Command: " + info);
 			
@@ -68,6 +70,9 @@ public class CommandSocket {
 				case Command.CLOSE_MACHINE:
 					break;
 				case Command.RESTART_MACHINE:
+					break;
+				case Command.OTHER:
+					System.out.println(commandInfo.message);
 					break;
 				default:
 					break;
